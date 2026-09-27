@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0b6b3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IIC Library">
+<meta name="description" content="IIC Library Management System - Preview Mockups">
+<title>IIC Library – Preview</title>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22IIC%20Library%22%2C%22short_name%22%3A%22IIC%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230b6b3a%22%2C%22theme_color%22%3A%22%230b6b3a%22%7D">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #0b6b3a;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #0b6b3a;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .topbar .logo { font-size: 24px; }
+  .topbar .title { font-size: 16px; font-weight: 700; }
+  .topbar .sub { font-size: 11px; opacity: 0.8; }
+  .hero {
+    padding: 28px 20px 20px;
+    text-align: center;
+    background: linear-gradient(180deg, #0b6b3a 0%, #0a5c33 100%);
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 22px; font-weight: 800; }
+  .hero p { margin: 0; font-size: 14px; opacity: 0.85; line-height: 1.5; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 14px;
+    font-weight: 600;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+  .tile {
+    background: #fff;
+    color: #333;
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: transform 0.15s;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+  .tile:active { transform: scale(0.96); }
+  .tile .icon { font-size: 34px; line-height: 1; }
+  .tile .name { font-size: 13px; font-weight: 700; color: #0b6b3a; }
+  .tile .desc { font-size: 11px; color: #666; line-height: 1.35; }
+  .footer {
+    padding: 24px 20px 40px;
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.75;
+    line-height: 1.7;
+  }
+  .footer a { color: #cfe8db; text-decoration: underline; }
+  .footer .org { font-weight: 700; font-size: 13px; opacity: 0.95; }
+
+  /* Modal screen viewer */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #111;
+    z-index: 999;
+    flex-direction: column;
+  }
+  .modal.active { display: flex; }
+  .modal-header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0b6b3a;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .modal-header .back {
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 0;
+    line-height: 1;
+  }
+  .modal-header .mtitle { font-size: 15px; font-weight: 700; }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px 40px;
+    background: #f7f9fb;
+  }
+
+  /* Phone frame inside modal */
+  .phone {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 6px solid #1a1a1a;
+    min-height: 660px;
+  }
+  .status-bar {
+    height: 28px;
+    background: #0b6b3a;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .app-bar {
+    background: #0b6b3a;
+    color: #fff;
+    padding: 16px;
+    font-size: 17px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .app-bar .back-icon { font-size: 20px; }
+  .content {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+    background: #f7f9fb;
+  }
+  .content.center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  h2 { font-size: 19px; margin: 0 0 12px 0; color: #0b6b3a; }
+  h3 { font-size: 15px; margin: 14px 0 8px 0; color: #333; }
+  p  { font-size: 14px; color: #555; margin: 4px 0; }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary { background: #0b6b3a; color: #fff; }
+  .btn-secondary { background: #e6f2ec; color: #0b6b3a; }
+  .btn-danger { background: #c0392b; color: #fff; }
+  .btn-large { padding: 28px; font-size: 19px; border-radius: 20px; }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card.overdue { border-left: 6px solid #c0392b; }
+  .card.due-soon { border-left: 6px solid #f39c12; }
+  .input {
+    width: 100%;
+    padding: 13px;
+    margin: 6px 0;
+    border: 1.5px solid #d0d7de;
+    border-radius: 12px;
+    font-size: 14px;
+    background: #fff;
+    font-family: inherit;
+  }
+  .label {
+    font-size: 12px;
+    color: #555;
+    margin-top: 8px;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .lang-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin: 6px 0;
+    border: 2px solid #d0d7de;
+    border-radius: 14px;
+    font-size: 15px;
+    background: #fff;
+  }
+  .lang-option.selected {
+    border-color: #0b6b3a;
+    background: #e6f2ec;
+  }
+  .radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #0b6b3a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .radio.selected::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: #0b6b3a;
+    border-radius: 50%;
+  }
+  .camera-frame {
+    width: 220px;
+    height: 220px;
+    border: 4px dashed #0b6b3a;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b6b3a;
+    font-size: 13px;
+    margin: 16px auto;
+    background: #f0f7f3;
+  }
+  .photo-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: #e6f2ec;
+    border: 3px dashed #0b6b3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin: 14px auto;
+  }
+  .success-icon { font-size: 66px; color: #0b6b3a; }
+  .queue-badge {
+    display: inline-block;
+    background: #0b6b3a;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  .chip {
+    display: inline-block;
+    background: #fdecea;
+    color: #c0392b;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .chip.green { background:#e6f2ec; color:#0b6b3a; }
+  .chip.orange { background:#fef4e6; color:#e67e22; }
+  .chip.gray { background:#eee; color:#666; }
+  .row { display:flex; justify-content:space-between; align-items:center; }
+  .big-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .big-nav .btn {
+    padding: 32px 10px;
+    font-size: 15px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+  }
+  .big-nav .btn .icon { font-size: 30px; }
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+    padding: 10px 0;
+    font-size: 10px;
+    color: #777;
+    flex-shrink: 0;
+  }
+  .bottom-nav div { text-align:center; }
+  .bottom-nav .active { color: #0b6b3a; font-weight: 600; }
+  .progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .progress-bar > div {
+    height: 100%;
+    background: #0b6b3a;
+    border-radius: 3px;
+  }
+  .divider { height: 1px; background: #e0e0e0; margin: 14px 0; }
+  .stat-tile {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .stat-tile .value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0b6b3a;
+    line-height: 1.1;
+  }
+  .stat-tile .label { font-size: 11px; color: #666; margin-top: 4px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .icon-btn {
+    background: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 18px 6px;
+    font-size: 11px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    font-family: inherit;
+  }
+  .icon-btn .icon { font-size: 24px; }
+  .toggle {
+    width: 44px;
+    height: 26px;
+    background: #0b6b3a;
+    border-radius: 13px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    top: 3px;
+    right: 3px;
+  }
+  .toggle.off { background: #ccc; }
+  .toggle.off::after { right: auto; left: 3px; }
+  .offline-banner {
+    background: #f39c12;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .cta {
+    display: block;
+    background: #fff;
+    color: #0b6b3a;
+    text-align: center;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    margin: 20px 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  }
+  .feedback-box {
+    margin: 0 16px 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+  }
+  .feedback-box .title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .feedback-box .desc {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .feedback-box a {
+    display: inline-block;
+    background: #25D366;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">📚</div>
+  <div>
+    <div class="title">IIC Library</div>
+    <div class="sub">Preview – Tap any card to view</div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>IIC Library App</h1>
+  <p>A preview of what's coming to your phone. Tap any card below to see how the app will look and work.</p>
+  <div class="badge">🚀 24 Screens</div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="feedback-box">
+  <div class="title">💬 Send Your Feedback</div>
+  <div class="desc">Seen something you like? Something to improve?<br>Message us directly on WhatsApp.</div>
+  <a href="https://wa.me/919960593787?text=Assalamu%20Alaikum%2C%20I%20just%20saw%20the%20IIC%20Library%20app%20preview.%20My%20feedback%3A%20" target="_blank">
+    Message on WhatsApp
+  </a>
+</div>
+
+<a class="cta" href="https://wa.me/?text=Check%20out%20the%20IIC%20Library%20app%20preview%20%E2%80%93%20please%20open%20this%20on%20your%20phone%3A%20" target="_blank">
+  💬 Share with a friend on WhatsApp
+</a>
+
+<div class="footer">
+  <div class="org">IIC</div>
+  Islamic Information Center<br>
+  Parge Nagar, Pune – 411048<br><br>
+  <a href="https://wa.me/919960593787" target="_blank">WhatsApp: +91 99605 93787</a>
+</div>
+
+<!-- Modal viewer -->
+<div class="modal" id="modal">
+  <div class="modal-header">
+    <button class="back" onclick="closeModal()">←</button>
+    <div class="mtitle" id="modalTitle">Screen</div>
+  </div>
+  <div class="modal-body">
+    <div class="phone" id="phoneFrame"></div>
+  </div>
+</div>
+
+<script>
+const screens = [
+  { name: "Splash / Language", icon: "🌐", desc: "Choose your language", render: renderSplash },
+  { name: "Login / Register", icon: "🔐", desc: "Mobile OTP login", render: renderLogin },
+  { name: "Registration Form", icon: "📝", desc: "Profile + photo + address", render: renderRegister },
+  { name: "Borrower Home", icon: "🏠", desc: "Main home screen", render: renderHome },
+  { name: "Search (Borrowed)", icon: "🔍", desc: "See who has the book", render: renderSearch },
+  { name: "Scan Book QR", icon: "📷", desc: "Camera scan view", render: renderScan },
+  { name: "Borrow Confirmation", icon: "✅", desc: "Book borrowed", render: renderBorrowConfirm },
+  { name: "My Books", icon: "📖", desc: "Your borrowed books", render: renderMyBooks },
+  { name: "Notifications", icon: "🔔", desc: "Due date alerts", render: renderNotifications },
+  { name: "Senior Mode", icon: "👴", desc: "Big buttons for seniors", render: renderSenior },
+  { name: "Admin Dashboard", icon: "📊", desc: "Admin overview", render: renderAdmin },
+  { name: "Waive Off", icon: "✋", desc: "Waive rare book cost", render: renderWaive },
+  { name: "Return – Scan", icon: "↩️", desc: "Return step 1", render: renderReturnScan },
+  { name: "Return – Unlock", icon: "🔓", desc: "Cupboard unlocks", render: renderReturnUnlock },
+  { name: "Return Confirmation", icon: "✔️", desc: "Return success", render: renderReturnConfirm },
+  { name: "Waitlist / Queue", icon: "⏳", desc: "Your queue position", render: renderWaitlist },
+  { name: "Pending Users", icon: "👥", desc: "Admin approves users", render: renderPending },
+  { name: "Cupboards & Locks", icon: "🔐", desc: "Manage smart locks", render: renderCupboards },
+  { name: "Recycle Bin", icon: "🗑️", desc: "Deleted items (15 days)", render: renderRecycle },
+  { name: "Dropdown Manager", icon: "⚙️", desc: "Manage dropdown values", render: renderDropdowns },
+  { name: "Reports", icon: "📈", desc: "Borrowing statistics", render: renderReports },
+  { name: "Profile", icon: "👤", desc: "Your account", render: renderProfile },
+  { name: "Settings", icon: "🛠️", desc: "Language & accessibility", render: renderSettings },
+  { name: "Offline Mode", icon: "📴", desc: "Works without internet", render: renderOffline },
+];
+
+// ---------- RENDER HELPERS ----------
+const SB = `<div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>`;
+
+function shell({ title, body, bar = true, bottomNav = null }) {
+  return `${SB}
+    ${bar ? `<div class="app-bar">${title}</div>` : ""}
+    ${body}
+    ${bottomNav || ""}`;
+}
+
+// ---------- SCREEN RENDERERS ----------
+function renderSplash() {
+  return `${SB}
+    <div class="content center" style="background:#0b6b3a; color:#fff;">
+      <div style="font-size:60px;">📚</div>
+      <h1 style="color:#fff; font-size:22px; margin:8px 0 4px;">IIC Library</h1>
+      <p style="color:#cfe8db; font-size:13px;">Islamic Information Center</p>
+      <p style="color:#cfe8db; font-size:12px; margin-top:20px;">Select Language</p>
+      <div style="width:100%; margin-top:6px;">
+        <div class="lang-option selected" style="background:#fff; color:#0b6b3a;"><span class="radio selected"></span> English</div>
+        <div class="lang-option" style="background:#0a5c33; color:#fff; border-color:#0a5c33;"><span class="radio" style="border-color:#fff;"></span> हिन्दी</div>
+        <div class="lang-option" style="background:#0a5c33; color:#fff; border-color:#0a5c33; direction:rtl;"><span class="radio" style="border-color:#fff;"></span> اردو</div>
+      </div>
+      <button class="btn" style="margin-top:20px; background:#fff; color:#0b6b3a;">Continue</button>
+    </div>`;
+}
+
+function renderLogin() {
+  return shell({ title: "Welcome to IIC LMS", body: `<div class="content">
+    <div style="text-align:center; margin:16px 0;"><div style="font-size:52px;">📖</div></div>
+    <button class="btn btn-primary">📷 Scan QR to Register</button>
+    <p style="text-align:center; color:#888; margin:16px 0;">— or login with mobile —</p>
+    <div class="label">Mobile Number</div>
+    <input class="input" placeholder="98XXXXXXXX">
+    <button class="btn btn-secondary">Send OTP</button>
+    <div class="label">OTP</div>
+    <input class="input" placeholder="__ __ __ __">
+    <button class="btn btn-primary">Verify & Login</button>
+  </div>` });
+}
+
+function renderRegister() {
+  return shell({ title: "Complete Profile", body: `<div class="content">
+    <div class="photo-circle">📷</div>
+    <p style="text-align:center; font-size:11px; color:#888;">Tap to take live photo (mandatory)</p>
+    <div class="label">Full Name *</div><input class="input" placeholder="Enter your name">
+    <div class="label">PIN Code *</div><input class="input" placeholder="411048">
+    <div class="label">State</div><input class="input" value="Maharashtra">
+    <div class="label">District</div><input class="input" value="Pune">
+    <div class="label">Area</div><input class="input" value="Parge Nagar">
+    <div class="label">Address Line 1 *</div><input class="input" placeholder="House / Building">
+    <div class="label">Address Line 2</div><input class="input" placeholder="Street / Colony">
+    <div class="label">Landmark (optional)</div><input class="input" placeholder="Near...">
+    <button class="btn btn-primary" style="margin-top:16px;">Submit for Approval</button>
+  </div>` });
+}
+
+function renderHome() {
+  const bottomNav = `<div class="bottom-nav">
+    <div class="active">🏠<br>Home</div><div>📚<br>Borrow</div><div>↩️<br>Return</div><div>👤<br>Profile</div>
+  </div>`;
+  return shell({ title: "Assalamu Alaikum, Ahmed", bottomNav, body: `<div class="content">
+    <div class="big-nav">
+      <button class="btn btn-primary"><span class="icon">📚</span>Borrow Book</button>
+      <button class="btn btn-primary"><span class="icon">↩️</span>Return Book</button>
+      <button class="btn btn-secondary"><span class="icon">📖</span>My Books</button>
+      <button class="btn btn-secondary"><span class="icon">🔍</span>Search</button>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="row"><strong>🔔 Notifications</strong><span class="chip orange">2 new</span></div>
+      <p style="margin-top:6px;">"Sahih Bukhari" due in 2 days</p>
+    </div>
+  </div>` });
+}
+
+function renderSearch() {
+  return shell({ title: "Book Details", body: `<div class="content">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:56px;">📘</div>
+      <h3 style="margin:8px 0 4px;">Sahih Bukhari</h3>
+      <p>Author: Imam Bukhari</p><p>Category: Hadith</p>
+    </div>
+    <div class="card">
+      <div class="row"><strong>Status</strong><span class="chip">Not Available</span></div>
+      <p style="margin-top:8px;">With: <strong>Ahmed K.</strong></p>
+      <p>Since: <strong>12 days</strong></p>
+    </div>
+    <button class="btn btn-secondary">💬 Ask Return Date</button>
+    <button class="btn btn-primary">🔔 Mark as Wanted</button>
+    <div style="text-align:center; margin-top:14px;"><span class="queue-badge">You are #3 in queue</span></div>
+  </div>` });
+}
+
+function renderScan() {
+  return shell({ title: "Scan Book QR", body: `<div class="content center" style="background:#111; color:#fff;">
+    <p style="color:#aaa;">Align the QR code inside the frame</p>
+    <div class="camera-frame" style="border-color:#4ade80; color:#4ade80; background:#1a1a1a;">📷 Camera View</div>
+    <p style="color:#aaa; margin-top:16px;">Scanning automatically…</p>
+  </div>` });
+}
+
+function renderBorrowConfirm() {
+  return shell({ title: "", bar: false, body: `<div class="content center">
+    <div class="success-icon">✅</div>
+    <h2>Book Borrowed</h2>
+    <div class="card" style="width:100%; text-align:left; margin-top:14px;">
+      <p><strong>Title:</strong> Sahih Bukhari</p>
+      <p><strong>Due Date:</strong> 15 Oct 2026</p>
+      <p><strong>Cost if lost:</strong> ₹500</p>
+    </div>
+    <button class="btn btn-primary" style="margin-top:14px;">OK</button>
+  </div>` });
+}
+
+function renderMyBooks() {
+  return shell({ title: "My Books", body: `<div class="content">
+    <div class="card due-soon"><div class="row"><strong>📖 Sahih Bukhari</strong><span class="chip orange">2 days left</span></div><p style="margin-top:6px;">Due: 15 Oct 2026</p><button class="btn btn-secondary" style="margin-top:8px;">Return</button></div>
+    <div class="card"><div class="row"><strong>📖 Quran Tafsir</strong><span class="chip green">Active</span></div><p style="margin-top:6px;">Due: 20 Oct 2026</p><button class="btn btn-secondary" style="margin-top:8px;">Return</button></div>
+    <div class="card overdue"><div class="row"><strong>📖 Fiqh Us Sunnah</strong><span class="chip">Overdue 3 days</span></div><p style="margin-top:6px;">Due: 12 Oct 2026</p><button class="btn btn-danger" style="margin-top:8px;">Return Now</button></div>
+  </div>` });
+}
+
+function renderNotifications() {
+  return shell({ title: "Notifications", body: `<div class="content">
+    <div class="card due-soon"><strong>⏰ Due in 2 days</strong><p>"Sahih Bukhari" must be returned by 15 Oct.</p></div>
+    <div class="card"><strong>🔔 Book Available</strong><p>"Quran Tafsir" is now available. You have 24 hours to borrow.</p></div>
+    <div class="card overdue"><strong>⚠️ Overdue</strong><p>"Fiqh Us Sunnah" is 3 days overdue. Please return.</p></div>
+  </div>` });
+}
+
+function renderSenior() {
+  return shell({ title: "IIC Library", body: `<div class="content">
+    <button class="btn btn-primary btn-large" style="padding:38px; font-size:20px;">📚<br>Borrow a Book</button>
+    <button class="btn btn-primary btn-large" style="padding:38px; font-size:20px;">↩️<br>Return a Book</button>
+    <button class="btn btn-secondary btn-large" style="padding:28px; font-size:18px;">📖 My Books</button>
+    <button class="btn btn-secondary btn-large" style="padding:28px; font-size:18px;">📞 Call Librarian</button>
+  </div>` });
+}
+
+function renderAdmin() {
+  return shell({ title: "Admin Dashboard", body: `<div class="content">
+    <div class="grid-2" style="margin-bottom:10px;">
+      <div class="stat-tile"><div class="value">5</div><div class="label">Pending</div></div>
+      <div class="stat-tile"><div class="value" style="color:#e67e22;">12</div><div class="label">Overdue</div></div>
+      <div class="stat-tile"><div class="value">8</div><div class="label">Waitlist</div></div>
+      <div class="stat-tile"><div class="value">87</div><div class="label">Borrowed</div></div>
+    </div>
+    <div class="grid-2">
+      <button class="icon-btn"><span class="icon">👥</span>Users</button>
+      <button class="icon-btn"><span class="icon">📚</span>Books</button>
+      <button class="icon-btn"><span class="icon">🔐</span>Locks</button>
+      <button class="icon-btn"><span class="icon">📊</span>Reports</button>
+      <button class="icon-btn"><span class="icon">⚙️</span>Dropdowns</button>
+      <button class="icon-btn"><span class="icon">🗑️</span>Recycle Bin</button>
+    </div>
+  </div>` });
+}
+
+function renderWaive() {
+  return shell({ title: "Waive Off", body: `<div class="content">
+    <div class="card"><p><strong>Book:</strong> Tafsir Ibn Kathir</p><p><strong>Cost:</strong> ₹2,000</p><p><strong>Borrower:</strong> Ahmed K.</p></div>
+    <div class="label">Reason for Waiver *</div>
+    <div class="lang-option"><span class="radio"></span> New Muslim</div>
+    <div class="lang-option"><span class="radio"></span> Non-Muslim</div>
+    <div class="lang-option"><span class="radio"></span> Alim wants to keep</div>
+    <div class="lang-option"><span class="radio"></span> Gift</div>
+    <div class="lang-option selected"><span class="radio selected"></span> Others</div>
+    <div class="label">Remarks *</div><input class="input" placeholder="Enter reason…">
+    <button class="btn btn-primary" style="margin-top:14px;">Confirm Waive</button>
+  </div>` });
+}
+
+function renderReturnScan() {
+  return shell({ title: "Return Book", body: `<div class="content center" style="background:#111; color:#fff;">
+    <p style="color:#aaa;">Step 1 of 3</p>
+    <div class="progress-bar" style="width:80%; background:#333;"><div style="width:33%;"></div></div>
+    <div class="camera-frame" style="border-color:#4ade80; color:#4ade80; background:#1a1a1a;">📷 Scan Book QR</div>
+    <p style="color:#aaa; margin-top:16px;">Align book QR in frame</p>
+  </div>` });
+}
+
+function renderReturnUnlock() {
+  return shell({ title: "Return Book", body: `<div class="content center">
+    <p style="color:#888;">Step 2 of 3</p>
+    <div class="progress-bar" style="width:80%;"><div style="width:66%;"></div></div>
+    <div style="font-size:64px; margin:16px 0;">🔓</div>
+    <h2>Cupboard Unlocked</h2>
+    <p>Cupboard: <strong>Shelf A (C1)</strong></p>
+    <p style="color:#c0392b; font-weight:600; margin-top:8px;">Opens for 5 seconds</p>
+    <div style="font-size:44px; font-weight:800; color:#0b6b3a; margin:8px 0;">5</div>
+    <p style="color:#888;">Place the book inside and close the door</p>
+    <button class="btn btn-primary" style="margin-top:14px;">I've placed the book</button>
+  </div>` });
+}
+
+function renderReturnConfirm() {
+  return shell({ title: "", bar: false, body: `<div class="content center">
+    <div class="success-icon">✅</div>
+    <h2>Book Returned</h2>
+    <p style="color:#888;">Thank you for returning on time</p>
+    <div class="card" style="width:100%; text-align:left; margin-top:14px;">
+      <p><strong>Title:</strong> Sahih Bukhari</p>
+      <p><strong>Returned:</strong> 14 Oct 2026, 6:42 PM</p>
+      <p><strong>Duration:</strong> 12 days</p>
+    </div>
+    <div class="card" style="width:100%; background:#e6f2ec; text-align:left;">
+      <p style="color:#0b6b3a; font-weight:600;">📢 Next in queue notified</p>
+      <p style="font-size:12px;">Fatima will be informed the book is available.</p>
+    </div>
+    <button class="btn btn-primary" style="margin-top:8px;">Done</button>
+  </div>` });
+}
+
+function renderWaitlist() {
+  return shell({ title: "My Waitlist", body: `<div class="content">
+    <div class="card" style="border-left:6px solid #0b6b3a;">
+      <div class="row"><strong>📘 Sahih Bukhari</strong><span class="chip green">#3 in queue</span></div>
+      <p style="margin-top:6px;">With: Ahmed K. (12 days)</p>
+      <div class="progress-bar"><div style="width:60%;"></div></div>
+      <p style="font-size:11px; color:#888;">Estimated wait: ~4 days</p>
+    </div>
+    <div class="card" style="border-left:6px solid #e67e22;">
+      <div class="row"><strong>📕 Quran Tafsir</strong><span class="chip orange">#1 in queue</span></div>
+      <p style="margin-top:6px;">With: Fatima (5 days)</p>
+      <div class="progress-bar"><div style="width:85%; background:#e67e22;"></div></div>
+      <p style="font-size:11px; color:#e67e22; font-weight:600;">You'll be notified soon</p>
+    </div>
+    <div class="card" style="border-left:6px solid #ccc;">
+      <div class="row"><strong>📗 Fiqh Us Sunnah</strong><span class="chip gray">#5 in queue</span></div>
+      <p style="margin-top:6px;">With: Yusuf (18 days)</p>
+      <div class="progress-bar"><div style="width:20%; background:#999;"></div></div>
+      <p style="font-size:11px; color:#888;">Estimated wait: ~10 days</p>
+    </div>
+  </div>` });
+}
+
+function renderPending() {
+  return shell({ title: "Pending Users (5)", body: `<div class="content">
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:44px; height:44px; border-radius:50%; background:#e6f2ec; display:flex; align-items:center; justify-content:center; font-size:20px;">👤</div>
+        <div><strong>Yusuf Khan</strong><p style="font-size:11px; margin:2px 0;">📱 98765 43210</p></div>
+      </div>
+      <p style="font-size:11px; margin-top:8px;">📍 Parge Nagar, Pune – 411048</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="btn btn-primary" style="margin:0; flex:1; padding:10px;">Approve</button>
+        <button class="btn btn-danger" style="margin:0; flex:1; padding:10px;">Reject</button>
+      </div>
+    </div>
+    <div class="card" style="background:#fff3cd; border-left:6px solid #e67e22;">
+      <strong>⚠️ Rejected Users (1)</strong>
+      <p style="font-size:12px; margin-top:6px;">Ali Raza – rejected by mistake</p>
+      <button class="btn btn-secondary" style="margin-top:8px; padding:10px;">Re-Approve</button>
+    </div>
+  </div>` });
+}
+
+function renderCupboards() {
+  return shell({ title: "Cupboards & Locks", body: `<div class="content">
+    <div class="card">
+      <div class="row"><strong>Shelf A (C1)</strong><span class="chip green">● Online</span></div>
+      <p style="font-size:12px; margin-top:6px;">Lock ID: ESP001 · Books: 120</p>
+      <button class="btn btn-secondary" style="margin-top:8px; padding:10px;">🔓 Test Unlock</button>
+    </div>
+    <div class="card">
+      <div class="row"><strong>Shelf B (C2)</strong><span class="chip green">● Online</span></div>
+      <p style="font-size:12px; margin-top:6px;">Lock ID: ESP002 · Books: 95</p>
+      <button class="btn btn-secondary" style="margin-top:8px; padding:10px;">🔓 Test Unlock</button>
+    </div>
+    <div class="card" style="border-left:6px solid #c0392b;">
+      <div class="row"><strong>Shelf C (C3)</strong><span class="chip">● Offline</span></div>
+      <p style="font-size:12px; margin-top:6px;">Lock ID: ESP003 · Books: 80</p>
+      <p style="font-size:11px; color:#c0392b; margin-top:4px;">⚠️ Last seen: 2 hours ago</p>
+    </div>
+    <button class="btn btn-primary" style="margin-top:8px;">+ Add Cupboard</button>
+  </div>` });
+}
+
+function renderRecycle() {
+  return shell({ title: "Recycle Bin", body: `<div class="content">
+    <div class="card" style="background:#fff3cd;">
+      <p style="font-size:12px; color:#856404;">🗑️ Items auto-delete after 15 days</p>
+    </div>
+    <div class="card">
+      <div class="row"><strong>📕 Sahih Muslim</strong><span class="chip orange">12 days left</span></div>
+      <p style="font-size:11px; margin-top:6px;">Deleted by: Librarian · Damaged</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn btn-secondary" style="margin:0; flex:1; padding:10px;">Restore</button>
+        <button class="btn btn-danger" style="margin:0; flex:1; padding:10px;">Delete Now</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row"><strong>📗 Riyad us Saliheen</strong><span class="chip orange">8 days left</span></div>
+      <p style="font-size:11px; margin-top:6px;">Deleted by: Admin</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn btn-secondary" style="margin:0; flex:1; padding:10px;">Restore</button>
+        <button class="btn btn-danger" style="margin:0; flex:1; padding:10px;">Delete Now</button>
+      </div>
+    </div>
+  </div>` });
+}
+
+function renderDropdowns() {
+  return shell({ title: "Manage Dropdowns", body: `<div class="content">
+    <div class="card">
+      <strong>Waiver Reasons</strong>
+      <p style="font-size:11px; color:#888;">6 items</p>
+      <div style="margin-top:8px;">
+        <div class="row" style="padding:6px 0; border-bottom:1px solid #eee;"><span>New Muslim</span><span style="color:#c0392b;">✕</span></div>
+        <div class="row" style="padding:6px 0; border-bottom:1px solid #eee;"><span>Non-Muslim</span><span style="color:#c0392b;">✕</span></div>
+        <div class="row" style="padding:6px 0; border-bottom:1px solid #eee;"><span>Alim wants to keep</span><span style="color:#c0392b;">✕</span></div>
+        <div class="row" style="padding:6px 0;"><span>Gift</span><span style="color:#c0392b;">✕</span></div>
+      </div>
+      <button class="btn btn-secondary" style="margin-top:10px; padding:10px;">+ Add Value</button>
+    </div>
+    <div class="card"><strong>Book Categories</strong><p style="font-size:11px; color:#888;">4 items</p></div>
+    <div class="card"><strong>Book Conditions</strong><p style="font-size:11px; color:#888;">4 items</p></div>
+  </div>` });
+}
+
+function renderReports() {
+  return shell({ title: "Reports", body: `<div class="content">
+    <div class="card" style="background:#0b6b3a; color:#fff;">
+      <p style="color:#cfe8db; font-size:11px;">This Month</p>
+      <div class="grid-2" style="margin-top:8px;">
+        <div><div style="font-size:22px; font-weight:800;">245</div><div style="font-size:11px; color:#cfe8db;">Borrowed</div></div>
+        <div><div style="font-size:22px; font-weight:800;">230</div><div style="font-size:11px; color:#cfe8db;">Returned</div></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="stat-tile"><div class="value" style="color:#e67e22;">12</div><div class="label">Overdue</div></div>
+      <div class="stat-tile"><div class="value">8</div><div class="label">Waitlist</div></div>
+      <div class="stat-tile"><div class="value">₹0</div><div class="label">Fines</div></div>
+      <div class="stat-tile"><div class="value" style="color:#c0392b;">₹2K</div><div class="label">Waived</div></div>
+    </div>
+  </div>` });
+}
+
+function renderProfile() {
+  return shell({ title: "Profile", body: `<div class="content">
+    <div style="text-align:center; margin-bottom:14px;">
+      <div class="photo-circle" style="font-size:44px;">👤</div>
+      <h3 style="margin:8px 0 2px;">Ahmed Khan</h3>
+      <p style="font-size:12px;">📱 98765 43210</p>
+      <span class="chip green" style="margin-top:6px;">● Active</span>
+    </div>
+    <div class="card">
+      <div class="row"><span>📚 Books Borrowed</span><strong>2</strong></div>
+      <div class="divider"></div>
+      <div class="row"><span>⏳ On Waitlist</span><strong>2</strong></div>
+      <div class="divider"></div>
+      <div class="row"><span>✅ Total Read</span><strong>14</strong></div>
+    </div>
+    <button class="btn btn-secondary">✏️ Edit Profile</button>
+    <button class="btn btn-danger">🚪 Logout</button>
+  </div>` });
+}
+
+function renderSettings() {
+  return shell({ title: "Settings", body: `<div class="content">
+    <h3 style="margin-top:0;">Language</h3>
+    <div class="lang-option selected"><span class="radio selected"></span> English</div>
+    <div class="lang-option"><span class="radio"></span> हिन्दी</div>
+    <div class="lang-option" style="direction:rtl;"><span class="radio"></span> اردو</div>
+    <h3>Accessibility</h3>
+    <div class="card">
+      <div class="row"><span>🔠 Senior Mode</span><div class="toggle"></div></div>
+      <p style="font-size:11px; color:#888; margin-top:4px;">Larger buttons and fonts</p>
+    </div>
+    <div class="card">
+      <div class="row"><span>🌗 High Contrast</span><div class="toggle off"></div></div>
+    </div>
+    <h3>Notifications</h3>
+    <div class="card">
+      <div class="row"><span>🔔 Due date reminders</span><div class="toggle"></div></div>
+    </div>
+    <div class="card">
+      <div class="row"><span>📢 Waitlist updates</span><div class="toggle"></div></div>
+    </div>
+  </div>` });
+}
+
+function renderOffline() {
+  const bottomNav = `<div class="bottom-nav">
+    <div class="active">🏠<br>Home</div><div>📚<br>Borrow</div><div>↩️<br>Return</div><div>👤<br>Profile</div>
+  </div>`;
+  return `${SB}
+    <div class="offline-banner">⚠️ You're offline — actions will sync when online</div>
+    <div class="app-bar">My Books</div>
+    <div class="content">
+      <div class="card" style="background:#e6f2ec; border-left:6px solid #0b6b3a;">
+        <p style="color:#0b6b3a; font-weight:600;">📶 Offline Mode Active</p>
+        <p style="font-size:12px; margin-top:4px;">You can still scan books. Changes will sync when you're back online.</p>
+      </div>
+      <div class="card due-soon"><div class="row"><strong>📖 Sahih Bukhari</strong><span class="chip orange">2 days left</span></div><p style="margin-top:6px;">Due: 15 Oct 2026</p></div>
+      <div class="card"><div class="row"><strong>📖 Quran Tafsir</strong><span class="chip green">Active</span></div><p style="margin-top:6px;">Due: 20 Oct 2026</p></div>
+    </div>
+    ${bottomNav}`;
+}
+
+// ---------- BUILD GRID ----------
+const grid = document.getElementById("grid");
+screens.forEach((s, i) => {
+  const tile = document.createElement("button");
+  tile.className = "tile";
+  tile.innerHTML = `<div class="icon">${s.icon}</div><div class="name">${i + 1}. ${s.name}</div><div class="desc">${s.desc}</div>`;
+  tile.onclick = () => openModal(i);
+  grid.appendChild(tile);
+});
+
+// ---------- MODAL ----------
+const modal = document.getElementById("modal");
+const phoneFrame = document.getElementById("phoneFrame");
+const modalTitle = document.getElementById("modalTitle");
+
+function openModal(i) {
+  const s = screens[i];
+  modalTitle.textContent = `${i + 1}. ${s.name}`;
+  phoneFrame.innerHTML = s.render();
+  modal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  modal.classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+modal.querySelector(".modal-header .back").onclick = closeModal;
+</script>
+
+</body>
+</html>
